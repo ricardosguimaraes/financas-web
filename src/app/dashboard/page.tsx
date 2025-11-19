@@ -1,4 +1,5 @@
 export default function DashboardPage() {
+  // Placeholder: when we add data fetching, we'll require session and query summaries.
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-12">
       <header className="flex flex-col gap-2">
