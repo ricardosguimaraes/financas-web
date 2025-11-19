@@ -5,14 +5,15 @@ import { categorySchema } from "@/lib/validators";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
     const data = categorySchema.parse(body);
 
     const updated = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: data.name,
         color: data.color,
@@ -38,10 +39,11 @@ export async function PUT(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await prisma.category.delete({ where: { id: params.id } });
+    const { id } = await params;
+    await prisma.category.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete category error", error);

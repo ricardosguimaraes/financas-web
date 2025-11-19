@@ -5,14 +5,15 @@ import { transactionSchema } from "@/lib/validators";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
     const data = transactionSchema.parse(body);
 
     const updated = await prisma.transaction.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         accountId: data.accountId,
         categoryId: data.categoryId,
@@ -42,10 +43,11 @@ export async function PUT(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await prisma.transaction.delete({ where: { id: params.id } });
+    const { id } = await params;
+    await prisma.transaction.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete transaction error", error);
