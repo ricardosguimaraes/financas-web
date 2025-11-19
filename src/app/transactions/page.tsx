@@ -1,3 +1,5 @@
+"use client";
+
 import { FormEvent, useEffect, useState } from "react";
 import { useRequireSession } from "@/components/session/use-require-session";
 
