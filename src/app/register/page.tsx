@@ -1,14 +1,126 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+
 export default function RegisterPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setMessage(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error ?? "Erro ao criar conta");
+      } else {
+        setMessage("Conta criada! Você já pode fazer login.");
+        setTimeout(() => router.push("/login"), 900);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Algo deu errado. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col gap-6 px-6 py-12">
       <h1 className="text-3xl font-bold text-zinc-900">Criar conta</h1>
       <p className="text-zinc-600">
-        Em breve: formulário de cadastro. Enquanto isso, envie POST para
-        <code className="mx-1 rounded bg-zinc-100 px-1 py-0.5 text-sm">
-          /api/auth/register
-        </code>
-        com email e senha.
+        Preencha email e senha. Não há auth persistente ainda; as rotas criam o
+        usuário e você pode testar o login em seguida.
       </p>
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm"
+      >
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-zinc-800">
+            Nome (opcional)
+          </label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+            placeholder="Seu nome"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-zinc-800">
+            Email
+          </label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+            placeholder="seu@email.com"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-zinc-800">
+            Senha
+          </label>
+          <input
+            type="password"
+            required
+            minLength={6}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100"
+            placeholder="mínimo 6 caracteres"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded-lg bg-emerald-600 px-4 py-2 text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {loading ? "Criando..." : "Criar conta"}
+        </button>
+
+        <p className="text-sm text-zinc-600">
+          Já tem login?{" "}
+          <a
+            href="/login"
+            className="font-semibold text-emerald-700 hover:underline"
+          >
+            Acessar
+          </a>
+        </p>
+
+        {message && (
+          <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+            {message}
+          </p>
+        )}
+        {error && (
+          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            {error}
+          </p>
+        )}
+      </form>
     </main>
   );
 }
