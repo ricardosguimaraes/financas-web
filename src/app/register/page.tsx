@@ -2,9 +2,11 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/components/session/session-context";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { setUser } = useSession();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
@@ -29,8 +31,9 @@ export default function RegisterPage() {
       if (!res.ok) {
         setError(data?.error ?? "Erro ao criar conta");
       } else {
-        setMessage("Conta criada! Você já pode fazer login.");
-        setTimeout(() => router.push("/login"), 900);
+        setUser({ id: data.id, email: data.email, name: data.name });
+        setMessage("Conta criada! Redirecionando para o dashboard...");
+        setTimeout(() => router.push("/dashboard"), 900);
       }
     } catch (err) {
       console.error(err);

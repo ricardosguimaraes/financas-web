@@ -2,9 +2,11 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/components/session/session-context";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,6 +30,7 @@ export default function LoginPage() {
       if (!res.ok) {
         setError(data?.error ?? "Erro ao autenticar");
       } else {
+        setUser({ id: data.id, email: data.email, name: data.name });
         setMessage("Login realizado. Redirecionando para o dashboard...");
         setTimeout(() => router.push("/dashboard"), 800);
       }
