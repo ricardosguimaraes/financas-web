@@ -10,6 +10,13 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 `@/src/lib/prisma.ts` exposes a singleton `PrismaClient` ready to import across API routes and server components.
 
+## API - rotas iniciais
+
+- Auth: `POST /api/auth/register`, `POST /api/auth/login`.
+- Accounts: `GET/POST /api/accounts`, `PUT/DELETE /api/accounts/[id]`.
+- Categories: `GET/POST /api/categories`, `PUT/DELETE /api/categories/[id]`.
+- Transactions: `GET/POST /api/transactions`, `PUT/DELETE /api/transactions/[id]` (filtros via query: userId, accountId, categoryId, type, from, to).
+
 ## Getting Started
 
 First, run the development server:
