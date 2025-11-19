@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { transactionSchema } from "@/lib/validators";
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const where: any = { userId };
+  const where: Prisma.TransactionWhereInput = { userId };
   if (accountId) where.accountId = accountId;
   if (categoryId) where.categoryId = categoryId;
   if (type) where.type = type;

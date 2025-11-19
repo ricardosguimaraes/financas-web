@@ -5,14 +5,15 @@ import { accountSchema } from "@/lib/validators";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
     const data = accountSchema.parse(body);
 
     const updated = await prisma.account.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: data.name,
         type: data.type,
@@ -38,10 +39,11 @@ export async function PUT(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await prisma.account.delete({ where: { id: params.id } });
+    const { id } = await params;
+    await prisma.account.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete account error", error);
