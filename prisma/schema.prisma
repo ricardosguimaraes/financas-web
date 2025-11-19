@@ -1,0 +1,85 @@
+// schema.prisma - Personal Finance System
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+
+  accounts     Account[]
+  categories   Category[]
+  transactions Transaction[]
+  budgets      Budget[]
+  goals        Goal[]
+}
+
+model Account {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  type      String
+  balance   Float    @default(0)
+  createdAt DateTime @default(now())
+
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+}
+
+model Category {
+  id     String @id @default(cuid())
+  userId String
+  name   String
+  color  String
+  icon   String
+
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+  Budget       Budget[]
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  accountId   String
+  categoryId  String
+  type        String
+  amount      Float
+  date        DateTime
+  description String?
+  recurring   Boolean  @default(false)
+
+  user     User     @relation(fields: [userId], references: [id])
+  account  Account  @relation(fields: [accountId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Budget {
+  id         String @id @default(cuid())
+  userId     String
+  categoryId String
+  limit      Float
+
+  user     User     @relation(fields: [userId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+}
+
+model Goal {
+  id      String @id @default(cuid())
+  userId  String
+  title   String
+  target  Float
+  current Float  @default(0)
+
+  user User @relation(fields: [userId], references: [id])
+}
