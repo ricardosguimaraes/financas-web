@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validators";
+import { createSessionToken, setSessionCookie } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,10 +23,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    return NextResponse.json(
+    const token = await createSessionToken({
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+    });
+    const res = NextResponse.json(
       { id: user.id, email: user.email, name: user.name },
       { status: 200 },
     );
+    setSessionCookie(res, token);
+    return res;
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(

@@ -33,9 +33,9 @@ export default function TransactionsPage() {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      fetch(`/api/accounts?userId=${user.id}`).then((r) => r.json()),
-      fetch(`/api/categories?userId=${user.id}`).then((r) => r.json()),
-      fetch(`/api/transactions?userId=${user.id}`).then((r) => r.json()),
+      fetch(`/api/accounts`).then((r) => r.json()),
+      fetch(`/api/categories`).then((r) => r.json()),
+      fetch(`/api/transactions`).then((r) => r.json()),
     ])
       .then(([acc, cat, tx]) => {
         setAccounts(acc);
@@ -57,7 +57,6 @@ export default function TransactionsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user.id,
           accountId,
           categoryId,
           type,

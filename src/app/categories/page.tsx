@@ -24,7 +24,7 @@ export default function CategoriesPage() {
 
   useEffect(() => {
     if (!user) return;
-    fetch(`/api/categories?userId=${user.id}`)
+    fetch(`/api/categories`)
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch(() => setError("Não foi possível carregar categorias"));
@@ -40,7 +40,6 @@ export default function CategoriesPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user.id,
           name,
           color,
           icon,

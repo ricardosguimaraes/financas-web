@@ -12,21 +12,18 @@ export const loginSchema = z.object({
 });
 
 export const accountSchema = z.object({
-  userId: z.string().min(1),
   name: z.string().min(1),
   type: z.string().min(1),
   balance: z.number().optional(),
 });
 
 export const categorySchema = z.object({
-  userId: z.string().min(1),
   name: z.string().min(1),
   color: z.string().min(1),
   icon: z.string().min(1),
 });
 
 export const transactionSchema = z.object({
-  userId: z.string().min(1),
   accountId: z.string().min(1),
   categoryId: z.string().min(1),
   type: z.enum(["income", "expense"]),

@@ -2,20 +2,16 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import { accountSchema } from "@/lib/validators";
+import { requireAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get("userId");
-
-  if (!userId) {
-    return NextResponse.json(
-      { error: "Missing userId query param" },
-      { status: 400 },
-    );
+  const user = await requireAuth(req);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const accounts = await prisma.account.findMany({
-    where: { userId },
+    where: { userId: user.id },
     orderBy: { createdAt: "desc" },
   });
 
@@ -23,13 +19,18 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const user = await requireAuth(req);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const data = accountSchema.parse(body);
 
     const created = await prisma.account.create({
       data: {
-        userId: data.userId,
+        userId: user.id,
         name: data.name,
         type: data.type,
         balance: data.balance ?? 0,
