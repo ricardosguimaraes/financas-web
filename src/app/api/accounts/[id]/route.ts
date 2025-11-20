@@ -2,18 +2,24 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/prisma";
 import { accountSchema } from "@/lib/validators";
+import { requireAuth } from "@/lib/auth";
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const user = await requireAuth(req);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
     const body = await req.json();
     const data = accountSchema.parse(body);
 
     const updated = await prisma.account.update({
-      where: { id },
+      where: { id, userId: user.id },
       data: {
         name: data.name,
         type: data.type,
@@ -41,9 +47,14 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const user = await requireAuth(_req);
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const { id } = await params;
-    await prisma.account.delete({ where: { id } });
+    await prisma.account.delete({ where: { id, userId: user.id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Delete account error", error);

@@ -23,7 +23,7 @@ export default function AccountsPage() {
 
   useEffect(() => {
     if (!user) return;
-    fetch(`/api/accounts?userId=${user.id}`)
+    fetch(`/api/accounts`)
       .then((res) => res.json())
       .then((data) => setAccounts(data))
       .catch(() => setError("Não foi possível carregar contas"));
@@ -39,7 +39,6 @@ export default function AccountsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: user.id,
           name,
           type,
           balance: Number(balance),

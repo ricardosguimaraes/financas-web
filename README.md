@@ -3,6 +3,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## Project Setup (Finanças)
 
 1. Duplicate `.env.example` to `.env` and set a valid Postgres `DATABASE_URL`.
+2. Defina `AUTH_SECRET` com uma string forte (usada para assinar o token de sessão HTTP-only).
 2. Install dependencies: `npm install`.
 3. Format and validate Prisma schema: `npx prisma format`.
 4. Create database and generate the client once the database exists: `npx prisma migrate dev --name init`.
@@ -15,7 +16,9 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - Auth: `POST /api/auth/register`, `POST /api/auth/login`.
 - Accounts: `GET/POST /api/accounts`, `PUT/DELETE /api/accounts/[id]`.
 - Categories: `GET/POST /api/categories`, `PUT/DELETE /api/categories/[id]`.
-- Transactions: `GET/POST /api/transactions`, `PUT/DELETE /api/transactions/[id]` (filtros via query: userId, accountId, categoryId, type, from, to).
+- Transactions: `GET/POST /api/transactions`, `PUT/DELETE /api/transactions/[id]` (filtros via query: accountId, categoryId, type, from, to).
+
+As rotas agora exigem sessão por cookie (token assinado) e não aceitam mais `userId` via payload/query; login/register já definem o cookie automaticamente.
 
 ## Getting Started
 

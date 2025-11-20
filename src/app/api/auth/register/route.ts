@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validators";
 import { ZodError } from "zod";
+import { createSessionToken, setSessionCookie } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +30,14 @@ export async function POST(req: NextRequest) {
       select: { id: true, email: true, name: true, createdAt: true },
     });
 
-    return NextResponse.json(user, { status: 201 });
+    const token = await createSessionToken({
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+    });
+    const res = NextResponse.json(user, { status: 201 });
+    setSessionCookie(res, token);
+    return res;
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(
